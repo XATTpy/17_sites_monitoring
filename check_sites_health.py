@@ -33,11 +33,16 @@ def is_server_respond_with_2xx(url):
         response = requests.get(url)
         return response.ok
     except requests.exceptions.ConnectionError:
-        return None
+        return False
 
 
-def get_domain_expiration_date(url):
-    response = whois(url)
+def get_domain(url):
+    domain = url.strip('http://')
+    return domain
+
+
+def get_domain_expiration_date(domain):
+    response = whois(domain)
     expiration_date = response.expiration_date
     if type(expiration_date) == list:
         expiration_date = expiration_date[1]
@@ -49,9 +54,9 @@ def is_domain_paid(expiration_date, days):
     difference = expiration_date - now
     delta = timedelta(days)
     if difference >= delta:
-        return 'Paid'
+        return True
     else:
-        return 'Not paid'
+        return False
 
 
 if __name__ == '__main__':
@@ -65,8 +70,9 @@ if __name__ == '__main__':
 
     for url in urls:
         response = is_server_respond_with_2xx(url)
+        domain = get_domain(url)
         if response:
-            expiration_date = get_domain_expiration_date(url)
+            expiration_date = get_domain_expiration_date(domain)
             payment = is_domain_paid(expiration_date, days)
             status = 'URL: {} , status: OK, {}'.format(url, payment)
         else:
