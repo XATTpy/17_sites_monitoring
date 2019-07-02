@@ -1,4 +1,4 @@
-from whois import whois
+import whois
 import argparse
 import requests
 from datetime import datetime, timedelta
@@ -42,11 +42,14 @@ def get_domain(url):
 
 
 def get_domain_expiration_date(domain):
-    response = whois(domain)
-    expiration_date = response.expiration_date
-    if type(expiration_date) == list:
-        expiration_date = expiration_date[1]
-    return expiration_date
+    try:
+        response = whois.whois(domain)
+        expiration_date = response.expiration_date
+        if type(expiration_date) == list:
+            expiration_date = expiration_date[1]
+        return expiration_date
+    except whois.parser.PywhoisError:
+        return datetime.now()
 
 
 def is_domain_paid(expiration_date, days):
@@ -71,10 +74,7 @@ if __name__ == '__main__':
     for url in urls:
         response = is_server_respond_with_2xx(url)
         domain = get_domain(url)
-        if response:
-            expiration_date = get_domain_expiration_date(domain)
-            payment = is_domain_paid(expiration_date, days)
-            status = 'URL: {} , status: OK, {}'.format(url, payment)
-        else:
-            status = 'URL: {} , status: No connection'.format(url)
+        expiration_date = get_domain_expiration_date(domain)
+        payment = is_domain_paid(expiration_date, days)
+        status = 'URL: {} ; Connection status: {}; Payment status: {}'.format(url, response, payment)
         print(status)
