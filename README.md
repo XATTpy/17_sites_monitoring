@@ -15,12 +15,12 @@ Remember, it is recommended to use [virtualenv/venv](https://devman.org/encyclop
 Then run the script:
 
 ```bash
-$ python3 check_sites_health.py /path/to/urls.txt
-URL: http://vk.com , status: OK, Paid
-URL: http://google.com , status: OK, Paid
-URL: http://gggdddd.com , status: No connection
-URL: http://devman.org , status: OK, Paid
-URL: http://github.com , status: OK, Paid
+$ python3 check_sites_health.py /home/xatt/Python/devman/urls.txt -d 60
+URL: http://vk.com ; Connection status: True; Payment status: True
+URL: http://google.com ; Connection status: True; Payment status: True
+URL: http://gggdddd.com ; Connection status: False; Payment status: False
+URL: http://devman.org ; Connection status: True; Payment status: False
+URL: http://github.com ; Connection status: True; Payment status: True
 ```
 
 # Project Goals
