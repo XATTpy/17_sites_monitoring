@@ -16,11 +16,9 @@ def get_args():
 
 
 def load_urls4check(path, parser):
-    try:
-        with open(path, 'r') as urls_file:
-            return urls_file.read().split('\n')
-    except FileNotFoundError:
-        parser.error('File not found.')
+    with open(path, 'r') as urls_file:
+        return urls_file.read().split('\n')
+
 
 
 def is_server_respond_with_200(url):
@@ -50,7 +48,10 @@ def is_domain_paid(expiration_date):
 if __name__ == '__main__':
     args, parser = get_args()
     path = args.input
-    urls = load_urls4check(path, parser)
+    try:
+        urls = load_urls4check(path, parser)
+    except FileNotFoundError:
+        parser.error('File not found.')
 
     for url in urls:
         response = is_server_respond_with_200(url)
