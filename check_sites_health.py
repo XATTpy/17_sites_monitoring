@@ -27,8 +27,7 @@ def load_urls4check(path, parser):
         return urls_file.read().split('\n')
 
 
-
-def is_server_respond_with_2xx(url):
+def is_server_respond_with_ok(url):
     try:
         response = requests.get(url)
         return response.ok
@@ -46,7 +45,9 @@ def get_domain_expiration_date(domain):
         response = whois.whois(domain)
         expiration_date = response.expiration_date
         if type(expiration_date) == list:
-            expiration_date = expiration_date[1]
+            expiration_date = expiration_date[0]
+        elif not expiration_date:
+            expiration_date = datetime.now()
         return expiration_date
     except whois.parser.PywhoisError:
         return datetime.now()
@@ -56,10 +57,7 @@ def is_domain_paid(expiration_date, days):
     now = datetime.now()
     difference = expiration_date - now
     delta = timedelta(days)
-    if difference >= delta:
-        return True
-    else:
-        return False
+    return bool(difference >= delta)
 
 
 if __name__ == '__main__':
@@ -72,7 +70,7 @@ if __name__ == '__main__':
         parser.error('File not found.')
 
     for url in urls:
-        response = is_server_respond_with_2xx(url)
+        response = is_server_respond_with_ok(url)
         domain = get_domain(url)
         expiration_date = get_domain_expiration_date(domain)
         payment = is_domain_paid(expiration_date, days)
